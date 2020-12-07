@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
 public class RpcClient {
 
@@ -36,7 +35,7 @@ public class RpcClient {
 
             RpcResponse rpcResponse = (RpcResponse) objectInputStream.readObject();
             if (rpcResponse == null) {
-                throw new RpcException(RpcError.SERVICE_CAN_NOT_BE_NULL,
+                throw new RpcException(RpcError.SERVICE_CAN_FOUND,
                         " service:" + rpcRequest.getInterfaceName());
             }
             if (rpcResponse.getStatusCode() == null ||

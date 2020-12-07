@@ -10,7 +10,7 @@ public class RpcException extends RuntimeException {
         super(message, cause);
     }
 
-    public RpcException(RpcException error) {
-        super(error);
+    public RpcException(RpcError error) {
+        super(error.getMessage());
     }
 }

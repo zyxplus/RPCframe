@@ -13,6 +13,7 @@ import java.io.Serializable;
 public class RpcRequest implements Serializable {
     //接口名称
     private String interfaceName;
+
     //调用方法
     private String methodName;
 
