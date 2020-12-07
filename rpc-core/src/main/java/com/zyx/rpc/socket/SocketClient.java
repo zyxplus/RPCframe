@@ -9,6 +9,7 @@ import com.zyx.rpc.enumeration.RpcException;
 import com.zyx.rpc.serializer.CommonSerializer;
 import com.zyx.rpc.util.ObjectReader;
 import com.zyx.rpc.util.ObjectWriter;
+import com.zyx.rpc.util.RpcMessageChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,6 +55,7 @@ public class SocketClient implements RpcClient {
                 throw new RpcException(RpcError.SERVICE_INVOCATION_FAILURE,
                         " service:" + rpcRequest.getInterfaceName());
             }
+            RpcMessageChecker.check(rpcRequest, rpcResponse);
             return rpcResponse.getData();
 
         } catch (IOException e) {
