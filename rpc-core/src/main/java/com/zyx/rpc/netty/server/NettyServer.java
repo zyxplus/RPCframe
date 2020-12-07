@@ -4,6 +4,7 @@ import com.zyx.rpc.RpcServer;
 import com.zyx.rpc.codec.CommonDecoder;
 import com.zyx.rpc.codec.CommonEncoder;
 import com.zyx.rpc.netty.client.NettyClient;
+import com.zyx.rpc.serializer.CommonSerializer;
 import com.zyx.rpc.serializer.HessianSerializer;
 import com.zyx.rpc.serializer.JsonSerializer;
 import io.netty.bootstrap.ServerBootstrap;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 public class NettyServer implements RpcServer {
 
     private static final Logger logger = LoggerFactory.getLogger(NettyClient.class);
+    private CommonSerializer serializer;
 
     /**
      * bossGroup负责处理TCP/IP连接的
@@ -44,7 +46,7 @@ public class NettyServer implements RpcServer {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             ChannelPipeline pipeline = socketChannel.pipeline();
-                            pipeline.addLast(new CommonEncoder(new HessianSerializer()));
+                            pipeline.addLast(new CommonEncoder(serializer));
                             pipeline.addLast(new CommonDecoder());
                             pipeline.addLast(new NettyServerHandler());
                         }
@@ -57,5 +59,10 @@ public class NettyServer implements RpcServer {
             bossGroup.shutdownGracefully();
             workerGroup.shutdownGracefully();
         }
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer = serializer;
     }
 }

@@ -2,6 +2,7 @@ package com.zyx.rpc;
 
 import com.zyx.rpc.client.register.DefaultServiceRegistry;
 import com.zyx.rpc.client.register.ServiceRegistry;
+import com.zyx.rpc.serializer.KryoSerializer;
 import com.zyx.rpc.socket.SocketServer;
 
 public class TestServer {
@@ -11,7 +12,8 @@ public class TestServer {
         ServiceRegistry serviceRegistry = new DefaultServiceRegistry();
         serviceRegistry.register(helloService);
 
-        RpcServer rpcServer = new SocketServer(serviceRegistry);
-        rpcServer.start(9000);
+        SocketServer socketServer = new SocketServer(serviceRegistry);
+        socketServer.setSerializer(new KryoSerializer());
+        socketServer.start(9000);
     }
 }

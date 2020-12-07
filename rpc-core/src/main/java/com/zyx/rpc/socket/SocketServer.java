@@ -3,6 +3,7 @@ package com.zyx.rpc.socket;
 import com.zyx.rpc.RequestHandler;
 import com.zyx.rpc.RpcServer;
 import com.zyx.rpc.client.register.ServiceRegistry;
+import com.zyx.rpc.serializer.CommonSerializer;
 import com.zyx.rpc.server.RequestHandlerThread;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ public class SocketServer implements RpcServer {
     private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
     private RequestHandler requestHandler = new RequestHandler();
     private final ServiceRegistry serviceRegistry;
+    private CommonSerializer serializer;
 
     public SocketServer(ServiceRegistry serviceRegistry) {
         this.serviceRegistry = serviceRegistry;
@@ -31,6 +33,7 @@ public class SocketServer implements RpcServer {
                 TimeUnit.SECONDS, workingQueue, threadFactory);
     }
 
+    @Override
     public void start(int port) {
         try {
             ServerSocket serverSocket = new ServerSocket(port);
@@ -38,11 +41,16 @@ public class SocketServer implements RpcServer {
             Socket socket;
             while ((socket = serverSocket.accept()) != null) {
                 logger.info("客户端连接，IP为{}:{}", socket.getInetAddress(), socket.getPort());
-                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry));
+                threadPool.execute(new RequestHandlerThread(socket, requestHandler, serviceRegistry, serializer));
             }
             threadPool.shutdown();
         } catch (IOException e) {
             logger.error("服务器启动错误", e);
         }
+    }
+
+    @Override
+    public void setSerializer(CommonSerializer serializer) {
+        this.serializer = serializer;
     }
 }
