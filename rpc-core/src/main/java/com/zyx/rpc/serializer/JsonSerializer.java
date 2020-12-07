@@ -3,6 +3,7 @@ package com.zyx.rpc.serializer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zyx.rpc.entity.RpcRequest;
+import com.zyx.rpc.enumeration.SerializeException;
 import com.zyx.rpc.enumeration.SerializerCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class JsonSerializer implements CommonSerializer {
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             logger.error("序列化过程报错：{}", e.getMessage());
-            return null;
+            throw new SerializeException("JSON序列化过程报错");
         }
     }
 
@@ -36,9 +37,8 @@ public class JsonSerializer implements CommonSerializer {
             }
             return obj;
         } catch (IOException e) {
-            e.printStackTrace();
             logger.error("反序列化过程报错：{}", e.getMessage());
-            return null;
+            throw new SerializeException("JSON反序列化过程报错");
         }
     }
 

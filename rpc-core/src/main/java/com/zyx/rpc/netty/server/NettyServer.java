@@ -4,6 +4,7 @@ import com.zyx.rpc.RpcServer;
 import com.zyx.rpc.codec.CommonDecoder;
 import com.zyx.rpc.codec.CommonEncoder;
 import com.zyx.rpc.netty.client.NettyClient;
+import com.zyx.rpc.serializer.HessianSerializer;
 import com.zyx.rpc.serializer.JsonSerializer;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
@@ -43,7 +44,7 @@ public class NettyServer implements RpcServer {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
                             ChannelPipeline pipeline = socketChannel.pipeline();
-                            pipeline.addLast(new CommonEncoder(new JsonSerializer()));
+                            pipeline.addLast(new CommonEncoder(new HessianSerializer()));
                             pipeline.addLast(new CommonDecoder());
                             pipeline.addLast(new NettyServerHandler());
                         }
