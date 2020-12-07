@@ -2,7 +2,7 @@ package com.zyx.rpc.client.register;
 
 import com.zyx.rpc.enumeration.RpcError;
 import com.zyx.rpc.enumeration.RpcException;
-import com.zyx.rpc.server.RpcServer;
+import com.zyx.rpc.socket.SocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,10 +12,10 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DefaultServiceRegistry implements ServiceRegistry {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(SocketServer.class);
 
-    private final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
-    private final Set<String> registerdService = ConcurrentHashMap.newKeySet();
+    private static final Map<String, Object> serviceMap = new ConcurrentHashMap<>();
+    private static final Set<String> registeredService = ConcurrentHashMap.newKeySet();
 
     /**
      * getInterfaces() 确定此对象所表示的类或接口实现的接口
@@ -26,10 +26,10 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     @Override
     public synchronized <T> void register(T service) {
         String serviceName = service.getClass().getCanonicalName();
-        if (registerdService.contains(serviceName)) {
+        if (registeredService.contains(serviceName)) {
             return;
         }
-        registerdService.add(serviceName);
+        registeredService.add(serviceName);
         Class<?>[] interfaces = service.getClass().getInterfaces();
         if (interfaces.length == 0) {
             throw new RpcException(RpcError.SERVICE_NOT_IMPLEMENT_ANY_INTERFACE);
@@ -44,8 +44,10 @@ public class DefaultServiceRegistry implements ServiceRegistry {
     public synchronized Object getService(String serviceName) {
         Object service = serviceMap.get(serviceName);
         if (service == null) {
-            throw new RpcException(RpcError.SERVICE_CAN_FOUND);
+            throw new RpcException(RpcError.SERVICE_NOT_FOUND);
         }
         return service;
     }
+
+
 }

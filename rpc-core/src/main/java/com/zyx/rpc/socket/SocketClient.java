@@ -1,5 +1,6 @@
-package com.zyx.rpc.client;
+package com.zyx.rpc.socket;
 
+import com.zyx.rpc.RpcClient;
 import com.zyx.rpc.entity.RpcRequest;
 import com.zyx.rpc.entity.RpcResponse;
 import com.zyx.rpc.enumeration.ResponseCode;
@@ -13,19 +14,25 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-public class RpcClient {
+public class SocketClient implements RpcClient {
 
-    private static final Logger logger = LoggerFactory.getLogger(RpcClient.class);
+    private final String host;
+    private final int port;
+
+    public SocketClient(String host, int port) {
+        this.host = host;
+        this.port = port;
+    }
+
+    private static final Logger logger = LoggerFactory.getLogger(SocketClient.class);
 
     /**
      * objectOutputStream 发送
      * objectInputStream 接收返回对象
      * @param rpcRequest
-     * @param host
-     * @param port
      * @return
      */
-    public Object sendRequest(RpcRequest rpcRequest, String host, int port) {
+    public Object sendRequest(RpcRequest rpcRequest) {
         try {
             Socket socket = new Socket(host, port);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -35,11 +42,11 @@ public class RpcClient {
 
             RpcResponse rpcResponse = (RpcResponse) objectInputStream.readObject();
             if (rpcResponse == null) {
-                throw new RpcException(RpcError.SERVICE_CAN_FOUND,
+                throw new RpcException(RpcError.SERVICE_NOT_FOUND,
                         " service:" + rpcRequest.getInterfaceName());
             }
             if (rpcResponse.getStatusCode() == null ||
-            rpcResponse.getStatusCode() != ResponseCode.SUCCESS.getCode()) {
+                    rpcResponse.getStatusCode() != ResponseCode.SUCCESS.getCode()) {
                 throw new RpcException(RpcError.SERVICE_INVOCATION_FAILURE,
                         " service:" + rpcRequest.getInterfaceName());
             }
